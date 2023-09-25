@@ -58,11 +58,40 @@ $page_title = "Hello Fresh Recipes";
 
 function parse($inputText){
 
-    $outputText = str_replace(array("\r\n", "\n", "\r"), '<br>', $inputText);
+    $outputText = str_replace(array("\r\n", "\n", "\r"), '<BR>', $inputText);
     
     return $outputText;
 
 
+}
+
+
+function filterLines($inputString) {
+  // Split the input string into an array of lines using "<BR>" as the delimiter
+  $lines = explode("<BR>", $inputString);
+
+  // Initialize an empty array to store the filtered lines
+  $filteredLines = [];
+
+  // Iterate through each line
+  foreach ($lines as $line) {
+      // Remove leading and trailing whitespace from the line
+      $line = trim($line);
+
+      // Check if the line starts with "(Contains" or is equal to "Not included in your delivery"
+      if (strpos($line, '(Contains') === 0 || $line === 'Not included in your delivery') {
+          // Skip this line
+          continue;
+      }
+
+      // If the line doesn't match the above conditions, add it to the filtered lines array
+      $filteredLines[] = $line;
+  }
+
+  // Combine the filtered lines back into a string separated by "<BR>"
+  $filteredString = implode("<BR>", $filteredLines);
+
+  return $filteredString;
 }
 
 
@@ -124,6 +153,13 @@ function parse($inputText){
 $i++;
 }
 ?>
+
+<h4>Ingredients</h4>
+<?php  foreach ($recipes as $recipe) { 
+ echo filterLines(parse($recipe['ingredients']))."<HR>"; 
+}
+  ?>
+
 
 </div> 
 </body>

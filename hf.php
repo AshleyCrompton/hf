@@ -61,7 +61,7 @@ if (isset($_GET['id'])){
 
 
 function parse($inputText){
-    $outputText = str_replace(array("\r\n", "\n", "\r"), '<br>', $inputText);
+    $outputText = str_replace(array("\r\n", "\n", "\r"), '<BR>', $inputText);
     return $outputText;
 
 }
@@ -80,7 +80,33 @@ function parse_method($inputText){
 
 }
 
-
+function filterLines($inputString) {
+    // Split the input string into an array of lines using "<BR>" as the delimiter
+    $lines = explode("<BR>", $inputString);
+  
+    // Initialize an empty array to store the filtered lines
+    $filteredLines = [];
+  
+    // Iterate through each line
+    foreach ($lines as $line) {
+        // Remove leading and trailing whitespace from the line
+        $line = trim($line);
+  
+        // Check if the line starts with "(Contains" or is equal to "Not included in your delivery"
+        if (strpos($line, '(Contains') === 0 || $line === 'Not included in your delivery') {
+            // Skip this line
+            continue;
+        }
+  
+        // If the line doesn't match the above conditions, add it to the filtered lines array
+        $filteredLines[] = $line;
+    }
+  
+    // Combine the filtered lines back into a string separated by "<BR>"
+    $filteredString = implode("<BR>", $filteredLines);
+  
+    return $filteredString;
+  }
 ?>
 
 <!DOCTYPE html>
@@ -125,7 +151,7 @@ function parse_method($inputText){
 
     <div class = "card-body">
         <h5 class="card-title">Ingredients</h5>
-        <?php  echo parse($recipe['ingredients']); ?>
+        <?php  echo filterLines(parse($recipe['ingredients'])); ?>
         <HR>
         <h5 class="card-title">Method</h5>
         <?php  echo parse_method($recipe['method']);?>
